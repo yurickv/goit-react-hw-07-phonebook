@@ -1,0 +1,32 @@
+.form {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+  padding: 20px;
+  border: solid;
+}
+
+.form button {
+  display: inline-block;
+  padding: 5px;
+  border-radius: 5px;
+  font-size: 16px;
+  font-weight: bold;
+  background-color: beige;
+}
+.form button:hover {
+  border-color: green;
+  color: green;
+}
+.inputLabel {
+  border-radius: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.inputLabel input {
+  font-size: 20px;
+}
+.inputLabel input:focus {
+  border-color: darkkhaki;
+}
