@@ -5,6 +5,7 @@ import { setFilter } from '../../redux/filtrSlice';
 
 export const Filter = () => {
     const dipatch = useDispatch();
+
     return (
         <div className={css.filterDiv}>
             <label htmlFor="search">Find contacts by name</label>

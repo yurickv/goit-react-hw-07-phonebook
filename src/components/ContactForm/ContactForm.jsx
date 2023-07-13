@@ -1,18 +1,16 @@
 import React from "react";
 import { Formik, Form, Field } from 'formik';
-import { nanoid } from 'nanoid'
 import * as Yup from "yup";
 import css from './Contact-style.module.css'
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from '../../redux/contSlice';
-
+import { selectContacts } from "redux/selectors";
+import { addContact } from 'redux/axiosOperation';
 
 export const ContactForm = () => {
     const dispatch = useDispatch();
-    const contacts = useSelector(state => state.contacts.items);
+    const contacts = useSelector(selectContacts);
 
     const handleSubmit = ({ name, number }, { resetForm }) => {
-        const id = nanoid();
         // Перевірка чи вже є контакт з таким іменем
         const AddedContactCheck = contacts.find(contact => {
             return contact.name.toLowerCase() === name.toLowerCase();
@@ -21,12 +19,9 @@ export const ContactForm = () => {
             return alert(`${AddedContactCheck.name} is already in contacts`);
         };
 
-        dispatch(addContact({ id, name, number }));
+        dispatch(addContact({ name, number }));
         resetForm();
     };
-
-
-
 
     return (
         <Formik

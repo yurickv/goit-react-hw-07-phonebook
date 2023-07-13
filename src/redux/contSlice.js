@@ -1,28 +1,88 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, isAnyOf } from "@reduxjs/toolkit";
+import { fetchContacts, addContact, deleteContact } from "./axiosOperation";
 
-const defaultContacts = [
-  { id: 'id-1', name: 'Rosie Simpson', number: '80974591256' },
-  { id: 'id-2', name: 'Hermione Kline', number: '80974438912' },
-  { id: 'id-3', name: 'Eden Clements', number: '80976451779' },
-  { id: 'id-4', name: 'Annie Copeland', number: '80972279126' },
-];
+const extraActions = [fetchContacts, addContact, deleteContact];
+const getActions = type => isAnyOf(...extraActions.map(action => action[type]));
 
 export const contactSlice = createSlice({
     name: 'contacts',
-    initialState: { items: defaultContacts },
-    reducers: {
-        addContact(state, action) {
-            state.items.push(action.payload);           
-        },
-        deleteContact(state, action) {
-            const idxContact = state.items.findIndex(contact => contact.id === action.payload);
-            state.items.splice(idxContact, 1); 
-        },
-    }
+    initialState: {
+        items: [],
+        isLoading: false,
+        error: null,
+    },
     
+    
+  extraReducers:  builder => {
+    builder
+      .addCase(fetchContacts.fulfilled, (state, action) => {
+        state.items = action.payload;
+      })
+      .addCase(addContact.fulfilled, (state, action) => {
+        state.items.push(action.payload);
+      })
+      .addCase(deleteContact.fulfilled, (state, action) => {
+        const index = state.items.findIndex(
+          contact => contact.id === action.payload.id
+        );
+        state.items.splice(index, 1);
+      })
+      .addMatcher(getActions('pending'), state => {
+        state.isLoading = true;
+      })
+      .addMatcher(getActions('rejected'), (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addMatcher(getActions('fulfilled'), state => {
+        state.isLoading = false;
+        state.error = null;
+      });
+  },
+  // ______________Початкове рішення
+  //   {
+  //   [fetchContacts.pending]: state => {
+  //     state.isLoading = true;
+  //   },
+  //   [fetchContacts.fulfilled]: (state, { payload }) => {
+  //     state.isLoading = false;
+  //     state.items = payload;
+  //     state.error = '';
+  //   },
+  //   [fetchContacts.error]: (state, { payload }) => {
+  //     state.isLoading = false;
+  //     state.error = payload;
+  //   },
+
+  //   [addContact.pending]: state => {
+  //     state.isLoading = true;
+  //   },
+  //   [addContact.fulfilled]: (state, { payload }) => {
+  //     state.isLoading = false;
+  //     state.items = payload;
+  //     state.error = '';
+  //   },
+  //   [addContact.error]: (state, { payload }) => {
+  //     state.isLoading = false;
+  //     state.error = payload;
+  //   },
+
+  //   [deleteContact.pending]: state => {
+  //     state.isLoading = true;
+  //   },
+  //   [deleteContact.fulfilled]: (state, { payload }) => {
+  //     state.isLoading = false;
+  //     state.items = payload;
+  //     state.error = '';
+  //   },
+  //   [deleteContact.error]: (state, { payload }) => {
+  //     state.isLoading = false;
+  //     state.error = payload;
+  //   },
+  // },
 
 })
 
-export const { addContact, deleteContact } = contactSlice.actions;
-export const contactsReducer = contactSlice.reducer;
+
+export const contactReducer = contactSlice.reducer;
 
